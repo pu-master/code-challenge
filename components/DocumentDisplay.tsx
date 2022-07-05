@@ -18,36 +18,29 @@ const DocumentDisplay = ({ documents }: Props) => {
   })
 
   const [listRef, listRect] = useResizeObserver<HTMLDivElement>()
+  const [lastDocumentRef, lastDocumentRect] = useResizeObserver<HTMLDivElement>()
 
   useEffect(() => {
-    if (!listRef.current || !listRect.width || stacked) {
-      return
-    }
-
-    const documentList = listRef.current.querySelector(`.${styles['document-list']}`)
-    if (!documentList) {
-      return
-    }
-
-    const childNodes = documentList.childNodes
-    if (!childNodes.length) {
+    if (!listRef.current
+      || !listRect.width
+      || !lastDocumentRef.current
+      || !lastDocumentRect.width
+      || stacked) {
       return
     }
 
     // Calculate the width of actual contents.
-    let childWidth = 0
-    childNodes.forEach((child) => {
-      childWidth += (child as HTMLElement).offsetWidth
-    })
-    // 8px is a margin between documents.
-    childWidth += 8 * (childNodes.length - 1)
+    const childWidth = lastDocumentRef.current.offsetLeft
+      + lastDocumentRect.width
+      + lastDocumentRect.left * 2 // For left and right-side paddings
+      + 2 // For left and right-side borders
 
     // If children are overflown.
     if (childWidth > listRect.width) {
       setStacked(true)
       thresholdWidth.current = childWidth
     }
-  }, [listRef, listRect]) // eslint-disable-line
+  }, [listRef, listRect, lastDocumentRef, lastDocumentRect, stacked])
 
   useEffect(() => {
     // If already stacked, check if it needs to be un-stacked.
@@ -87,9 +80,10 @@ const DocumentDisplay = ({ documents }: Props) => {
         <div className={styles['document-list-wrapper']}>
           <div className={styles['document-list']}>
             {
-              documents.map(document => (
+              documents.map((document, index) => (
                 <span
                   key={document}
+                  ref={index === documents.length - 1 ? lastDocumentRef : undefined}
                   className={styles.document}
                   title={document}
                 >
