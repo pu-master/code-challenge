@@ -28,7 +28,13 @@ const Home: NextPage<{ users: User[] }> = ({ users }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <Table striped>
+        <Table striped className={styles.table}>
+          <colgroup>
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '40%' }} />
+          </colgroup>
           <thead>
             <tr>
               <th>First Name</th>
