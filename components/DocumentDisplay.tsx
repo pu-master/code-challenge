@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@mantine/core'
+import { useClickOutside } from '@mantine/hooks'
 import styles from './DocumentDisplay.module.scss'
 
 type Props = {
@@ -7,23 +8,12 @@ type Props = {
 }
 
 const DocumentDisplay = ({ documents }: Props) => {
-  const wrapperRef = useRef<HTMLDivElement>(null)
   const [expanded, setExpanded] = useState(false)
 
   // Listen for outside click events.
-  useEffect(() => {
-    function clickHandler(event: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains((event.target) as Node)) {
-        setExpanded(false)
-      }
-    }
-
-    document.addEventListener('mousedown', clickHandler)
-
-    return () => {
-      document.removeEventListener('mousedown', clickHandler)
-    }
-  }, [wrapperRef])
+  const wrapperRef = useClickOutside(() => {
+    setExpanded(false)
+  })
 
   // Expand/collapse a list of documents.
   const handleToggle = () => {
